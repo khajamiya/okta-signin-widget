@@ -14,14 +14,13 @@ import '../../views/shared/FooterWithBackLink';
 import ViewFactory from '../view-builder/ViewFactory';
 import IonResponseHelper from '../ion/IonResponseHelper';
 
-
 export default Controller.extend({
   className: 'form-controller',
 
   initialize: function () {
     Controller.prototype.initialize.call(this);
 
-    this.listenTo(this.options.appState, 'idxResponseUpdated', this.render);
+    this.listenTo(this.options.appState, 'change:currentFormName', this.render);
     this.listenTo(this.options.appState, 'invokeAction', this.invokeAction);
     this.listenTo(this.options.appState, 'switchForm', this.switchForm);
     this.listenTo(this.options.appState, 'saveForm', this.handleFormSave);
@@ -51,9 +50,8 @@ export default Controller.extend({
   invokeAction (actionPath = '') {
     const idx = this.options.appState.get('idx');
     if (idx['neededToProceed'].find(item => item.name === actionPath)) {
-      idx.proceed(actionPath, {}).then((resp) => {
-        this.options.appState.set('idx', resp);
-        this.options.appState.trigger('remediationSuccess', resp.rawIdxState);
+      idx.proceed(actionPath, {}).then((idxResp) => {
+        this.options.appState.trigger('remediationSuccess', idxResp);
       })
         .catch(error => {
           throw error;
@@ -68,9 +66,8 @@ export default Controller.extend({
       // 1. what's the approach to show spinner indicating API in fligh?
       // 2. how to catch error?
       actionFn()
-        .then(resp => {
-          this.options.appState.set('idx', resp);
-          this.options.appState.trigger('remediationSuccess', resp.rawIdxState);
+        .then(idxResp => {
+          this.options.appState.trigger('remediationSuccess', idxResp);
         })
         .catch(error => {
           throw error;
@@ -83,7 +80,6 @@ export default Controller.extend({
   switchForm (formName) {
     // trigger formname change to change view
     this.options.appState.set('currentFormName', formName);
-    this.options.appState.trigger('idxResponseUpdated', formName);
   },
 
   handleFormSave (model) {
@@ -123,8 +119,7 @@ export default Controller.extend({
   },
 
   updateAppStateWithNewIdx: function (idxResp) {
-    this.options.appState.set('idx', idxResp);
-    this.options.appState.trigger('remediationSuccess', idxResp.rawIdxState);
+    this.options.appState.trigger('remediationSuccess', idxResp);
   },
 
   /**

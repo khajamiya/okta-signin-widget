@@ -15,7 +15,7 @@ const covertIonFieldToProp = (ionField) => {
   const config = Object.assign(
     {},
     _.chain(ionField)
-      .pick('minLength', 'maxLength', 'required')
+      .pick('minLength', 'maxLength', 'required', 'value')
       .defaults({ type: 'string', required: true })
       .value()
   );
@@ -24,6 +24,7 @@ const covertIonFieldToProp = (ionField) => {
 
 const create = function (remediation = {}) {
   const value = remediation.uiSchema;
+  // NOTE: consider moving logic to uiSchemaTransformer as well.
   const props = _.chain(value)
     .map(covertIonFieldToProp)
     .reduce((init, field) => {
