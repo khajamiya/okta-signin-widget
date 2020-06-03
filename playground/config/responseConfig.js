@@ -4,7 +4,11 @@ const idx = {
   // ===== IDX
 
   '/idp/idx/introspect': [
-    'terminal-transfered-email'
+    // 'authenticator-select-verify-options',
+    // 'authenticator-select-enroll-options',
+    'identify',
+    // 'identify-locked-user'
+    // 'factor-verification-email'
   ],
   '/idp/idx': [
     'select-factor-authenticate'
@@ -14,8 +18,7 @@ const idx = {
     'enroll-profile-new'
   ],
   '/idp/idx/credential/enroll': [
-    // 'authenticator-enroll-password',
-    'authenticator-enroll-phone'
+    'authenticator-enroll-password',
   ],
   '/idp/idx/identify': [
     // 'error-identify-access-denied',

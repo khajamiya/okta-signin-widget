@@ -40,7 +40,6 @@ export default Controller.extend({
     this.formView = this.add(TheView, {
       options: {
         currentViewState,
-        messages: this.options.appState.get('messages'),
       }
     }).last();
 
@@ -50,9 +49,8 @@ export default Controller.extend({
   invokeAction (actionPath = '') {
     const idx = this.options.appState.get('idx');
     if (idx['neededToProceed'].find(item => item.name === actionPath)) {
-      idx.proceed(actionPath, {}).then((idxResp) => {
-        this.options.appState.trigger('remediationSuccess', idxResp);
-      })
+      idx.proceed(actionPath, {})
+        .then(this.handleIdxSuccess.bind(this))
         .catch(error => {
           throw error;
         });
@@ -66,9 +64,7 @@ export default Controller.extend({
       // 1. what's the approach to show spinner indicating API in fligh?
       // 2. how to catch error?
       actionFn()
-        .then(idxResp => {
-          this.options.appState.trigger('remediationSuccess', idxResp);
-        })
+        .then(this.handleIdxSuccess.bind(this))
         .catch(error => {
           throw error;
         });
@@ -92,7 +88,7 @@ export default Controller.extend({
     this.toggleFormButtonState(true);
     model.trigger('request');
     return idx.proceed(formName, model.toJSON())
-      .then(resp => this.updateAppStateWithNewIdx(resp))
+      .then(this.handleIdxSuccess.bind(this))
       .catch(error => {
         if (error.proceed && error.rawIdxState) {
           // Okta server responds 401 status code with WWW-Authenticate header and new remediation
@@ -100,7 +96,7 @@ export default Controller.extend({
           // the response reaches here when Okta Verify is not installed
           // we need to return an idx object so that
           // the SIW can proceed to the next step without showing error
-          this.updateAppStateWithNewIdx(error);
+          this.handleIdxSuccess(error);
         } else {
           this.showFormErrors(model, error);
         }
@@ -118,7 +114,7 @@ export default Controller.extend({
     this.toggleFormButtonState(false);
   },
 
-  updateAppStateWithNewIdx: function (idxResp) {
+  handleIdxSuccess: function (idxResp) {
     this.options.appState.trigger('remediationSuccess', idxResp);
   },
 
