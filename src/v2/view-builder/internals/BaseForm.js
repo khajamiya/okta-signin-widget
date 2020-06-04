@@ -51,6 +51,10 @@ export default Form.extend({
     } else {
       this.addInput(input);
     }
+
+    if (Array.isArray(input.optionsUiSchemas)) {
+      input.optionsUiSchemas[0].forEach(this.addInputOrView.bind(this));
+    }
   },
 
   addCallouts () {

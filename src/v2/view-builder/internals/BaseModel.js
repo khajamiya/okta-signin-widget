@@ -29,21 +29,26 @@ const convertUiSchemaFieldToProp = (uiSchemaField) => {
 };
 
 const create = function (remediation = {}) {
-  const value = remediation.uiSchema;
-  // NOTE: consider moving logic to uiSchemaTransformer as well.
-  const props = _.chain(value)
-    .map(convertUiSchemaFieldToProp)
-    .reduce((init, field) => {
-      return Object.assign({}, init, field);
-    })
-    .value();
+  const uiSchemas = remediation.uiSchema;
+  const props = {};
+  const local = {
+    formName: 'string',
+  };
+
+  uiSchemas.forEach(schema => {
+    if (Array.isArray(schema.optionsUiSchemas)) {
+      schema.optionsUiSchemas[0].forEach(subSchema => {
+        Object.assign(props, convertUiSchemaFieldToProp(subSchema));
+      });
+      Object.assign(local, convertUiSchemaFieldToProp(schema));
+    } else {
+      Object.assign(props, convertUiSchemaFieldToProp(schema));
+    }
+  });
 
   const BaseModel = Model.extend({
     props,
-
-    local: {
-      formName: 'string',
-    },
+    local,
   });
 
   return BaseModel;
