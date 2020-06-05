@@ -47,7 +47,7 @@
                       },
                       {
                         "name": "answer",
-                        "label": "answer",
+                        "label": "Answer",
                         "required": true,
                         "secret": true
                       }
@@ -68,12 +68,12 @@
                       },
                       {
                         "name": "question",
-                        "label": "Type your custom question",
+                        "label": "Create a security question",
                         "required": true
                       },
                       {
                         "name": "answer",
-                        "label": "answer",
+                        "label": "Answer",
                         "required": true,
                         "secret": true
                       }
